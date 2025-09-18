@@ -23,5 +23,8 @@
         "php-di/php-di": "^7.0",
         "slim/flash": "^0.4.0"
     },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^4.0"
+    },
     "license": "MIT"
 }
