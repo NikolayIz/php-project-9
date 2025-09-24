@@ -19,13 +19,14 @@ $container->set('flash', function () {
 
 // $app = AppFactory::create();
 $app = AppFactory::createFromContainer($container);
+$app->addErrorMiddleware(true, true, true);
 
-$app->get('/', function (Request $request, Response $response, array $args) {
+$app->get('/', function (Request $request, Response $response) {
     return $this->get('renderer')->render($response, 'index.phtml');
 });
 
 // обработчик на urls
-$app->get('/urls', function (Request $request, Response $response, array $args) {
+$app->get('/urls', function (Request $request, Response $response) {
     return $this->get('renderer')->render($response, 'urls.phtml');
 });
 
