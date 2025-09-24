@@ -8,15 +8,53 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </head>
-<body>
-    <header class="bg-light text-dark py-3 mb-4">
-        <div class="container">
-        <h1 class="h1">Анализатор страниц</h1>
-        </div>
+<body class="min-vh-100 d-flex flex-column">
+    <header class="flex-shrink-0">
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark px-3">
+            <a class="navbar-brand" href="/">Анализатор страниц</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a href="/" class="nav-link active">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/urls" class="nav-link">Сайты</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
     </header>
-
-    <main class="container">
-        Здесь будет контент
+    <main class="flex-grow-1">
+        <div class="container-lg mt-3">
+            <div class="row">
+                <div class="col-12 col-md-10 col-lg-8 mx-auto border rounded-3 bg-light p-5">
+                    <h1 class="display-3">Анализатор страниц</h1>
+                    <p class="lead">Бесплатно проверяйте сайты на SEO пригодность</p>
+                    <form action="/urls" method="post" class="row" required>
+                        <div class="col-8">
+                            <label for="text" class="visually-hidden">URL для проверки</label>
+                            <input type="text" name="url[name]" value class="form-control form-control-lg"
+                                placeholder="https://www.example.com">
+                        </div>
+                        <div class="col-2">
+                            <input type="submit" class="btn btn-primary btn-lg ms-3 px-5 text-uppercase mx-3"
+                                value="Проверить">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </main>
+    <footer class="border-top py-3 mt-5 flex-shrink-0">
+        <div class="container-lg">
+            <div class="text-center">
+                <a href="https://hexlet.io/pages/about" targer="_blank">Hexlet</a>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
