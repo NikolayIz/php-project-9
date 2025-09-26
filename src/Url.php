@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App;
 
@@ -12,7 +12,6 @@ class Url
 
     public function __construct(string $name, ?int $id = null, ?Carbon $createdAt = null)
     {
-        
         $this->name = $this->normalizeName($name);
         $this->id = $id;
         $this->createdAt = $createdAt ?? Carbon::now();

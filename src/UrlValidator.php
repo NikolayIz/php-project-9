@@ -1,5 +1,7 @@
 <?php
 
+namespace App;
+
 use Valitron\Validator;
 
 class UrlValidator
@@ -27,6 +29,10 @@ class UrlValidator
 
         // Приведём ошибки к простому формату
         // Valitron возвращает массив с ключами полей, например ['name' => ['Ошибка1', 'Ошибка2']]
-        return $v->errors();
+        $errors = [];
+        foreach ($v->errors() as $fieldErrors) {
+            $errors = array_merge($errors, $fieldErrors);
+        }
+        return $errors;
     }
 }

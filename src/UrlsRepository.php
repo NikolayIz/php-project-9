@@ -10,7 +10,7 @@ class UrlsRepository
 
     public function __construct(\PDO $conn)
     {
-        $this->conn = $conn;
+        $this->pdo = $conn;
     }
 
     /**
@@ -42,7 +42,7 @@ class UrlsRepository
     {
         $stmt = $this->pdo->prepare('SELECT * FROM urls WHERE id = :id');
         $stmt->execute(['id' => $id]);
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        $data = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if (!$data) {
             return null;
@@ -62,7 +62,7 @@ class UrlsRepository
     {
         $stmt = $this->pdo->prepare('SELECT * FROM urls WHERE name = :name');
         $stmt->execute(['name' => $name]);
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        $data = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if (!$data) {
             return null;
@@ -80,8 +80,8 @@ class UrlsRepository
      */
     public function all(): array
     {
-        $stmt = $this->pdo->query('SELECT * FROM urls ORDER BY id DESC');
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $this->pdo->query('SELECT * FROM urls ORDER BY created_at DESC');
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
         return array_map(fn($row) => new Url(
             $row['name'],
