@@ -9,8 +9,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </head>
 <body class="min-vh-100 d-flex flex-column">
-    <?php require 'templates/layout/header.phtml'; ?>
-    <?php require 'templates/layout/alerts.phtml'; ?>
+    <?php require __DIR__ . '/../layout/header.phtml'; ?>
+    <?php require __DIR__ . '/../layout/alerts.phtml'; ?>
     <main class="flex-grow-1">
         <div class="container-lg mt-3">
             <h1>Сайт: <?= htmlspecialchars($url->getName()) ?></h1>
@@ -60,6 +60,6 @@
             </table>
         </div>
     </main>
-    <?php require 'templates/layout/footer.phtml'; ?>
+    <?php require __DIR__ . '/../layout/footer.phtml'; ?>
 </body>
 </html>
