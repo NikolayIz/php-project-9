@@ -26,7 +26,8 @@
         "vlucas/valitron": "^1.4"
     },
     "require-dev": {
-        "squizlabs/php_codesniffer": "^4.0"
+        "squizlabs/php_codesniffer": "^4.0",
+        "symfony/var-dumper": "^7.3"
     },
     "license": "MIT"
 }

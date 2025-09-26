@@ -7,6 +7,7 @@ use DI\Container;
 use App\UrlValidator;
 use App\Url;
 use App\UrlsRepository;
+use function Symfony\Component\VarDumper\dump;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -58,13 +59,13 @@ $app->get('/urls', function (Request $request, Response $response) {
 
 $app->post('/urls', function (Request $request, Response $response) {
     $data = $request->getParsedBody();
-    // var_dump($data); // посмотреть что прилетает из формы
+    dump($data); // посмотреть что прилетает из формы
     
     $errors = [];
     $errors = UrlValidator::validate($data);
 
     if (!empty($errors)) {
-        // var_dump($errors); // посмотреть ошибки валидации
+        dump($errors);
         $this->get('flash')->addMessage('errors', $errors);
         return $response
             ->withHeader('Location', '/')
@@ -72,8 +73,9 @@ $app->post('/urls', function (Request $request, Response $response) {
     }
     $url = new Url($data);
     $urlsRepository = $this->get(UrlsRepository::class);
-    $urlsRepository->save($url);    
-    // var_dump($url); // посмотреть валидный URL
+    $urlsRepository->save($url);
+    dump($url); // посмотреть валидный URL  
+
     $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
     return $response
         ->withHeader('Location', '/urls')
