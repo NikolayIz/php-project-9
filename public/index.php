@@ -10,9 +10,7 @@ use App\UrlsRepository;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+session_start();
 
 $container = new Container();
 
@@ -26,16 +24,19 @@ $host = $databaseUrl['host']; // localhost
 $dbName = ltrim($databaseUrl['path'], '/'); // mydb
 
 // Подключение к базе данных
-try {
-    $container->set(\PDO::class, function () use ($host, $dbName, $username, $password) {
-        $conn = new PDO("pgsql:host={$host};dbname={$dbName}", $username, $password);
+$container->set(\PDO::class, function () use ($host, $dbName, $username, $password) {
+    try {
+        $dsn = "pgsql:host={$host};dbname={$dbName}";
+        $conn = new PDO($dsn, $username, $password);
         $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         return $conn;
-    });
-} catch (PDOException $e) {
-    // Например, через какое-то время повторить попытку соединения
-}
-
+    } catch (PDOException $e) {
+        // В продакшене: логируем и показываем что-то общее
+        dump('Ошибка подключения к базе данных');
+        exit;
+    }
+});
 
 $container->set('renderer', function () {
     // Параметром передается базовая директория, в которой будут храниться шаблоны
@@ -53,7 +54,6 @@ $app->addErrorMiddleware(true, true, true);
 $router = $app->getRouteCollector()->getRouteParser();
 
 $app->get('/', function (Request $request, Response $response) {
-    
     $messages = $this->get('flash')->getMessages();
 
     $params = [
@@ -87,10 +87,11 @@ $app->post('/urls', function (Request $request, Response $response) use ($router
     $errors = UrlValidator::validate($urlData); // url['name'] => 'https://example.com'
 
     if (!empty($errors)) {
-        $this->get('flash')->addMessage('errors', $errors[0]); // выводим только первую ошибку
-        return $response
-            ->withRedirect($router->urlFor('main'))
-            ->withStatus(302);
+        $params = [
+            'url' => $urlData,
+            'errors' => $errors
+        ];
+        return $this->get('renderer')->render($response, 'index.phtml', $params);
     }
 
     $url = new Url($urlData['name']);
@@ -98,12 +99,12 @@ $app->post('/urls', function (Request $request, Response $response) use ($router
     $urlsRepository = $this->get(UrlsRepository::class);
 
     if ($urlsRepository->findByName($url->getName()) !== null) {
-        $this->get('flash')->addMessage('errors', 'Страница уже существует');
+        $id = $urlsRepository->findByName($url->getName())->getId();
+        $this->get('flash')->addMessage('success', 'Страница уже существует');
         return $response
-            ->withRedirect($router->urlFor('main'))
+            ->withRedirect($router->urlFor('urls.show', ['id' => $id]))
             ->withStatus(302);
     }
-    
     $urlFromDb = $urlsRepository->save($url);//Возвращает объект Url с обновлённым ID и временем создания.
     $id = $urlFromDb->getId();
 

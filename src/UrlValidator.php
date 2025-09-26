@@ -18,8 +18,8 @@ class UrlValidator
         $v = new Validator($data);
 
         // Правила валидации
-        $v->rule('required', 'name')->message('Поле обязательно для заполнения');
-        $v->rule('url', 'name')->message('Введите корректный URL');
+        $v->rule('required', 'name')->message('URL не должен быть пустым');
+        $v->rule('url', 'name')->message('Некорректный URL');
         $v->rule('lengthMax', 'name', 255)->message('URL не должен превышать 255 символов');
 
         // Проверяем
