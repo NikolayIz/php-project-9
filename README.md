@@ -13,7 +13,7 @@
 
 `make setup`
 
-Создаем локальную базу данных
+Создаем локальную базу данных - [инструкция](https://github.com/Hexlet/ru-instructions/blob/main/postgresql.md)
 
 Для подключения к локальной БД нужно сделать в терминале:
 
