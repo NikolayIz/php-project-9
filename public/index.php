@@ -40,7 +40,9 @@ $container->set(\PDO::class, function () use ($host, $dbName, $username, $passwo
 
 $container->set('renderer', function () {
     // Параметром передается базовая директория, в которой будут храниться шаблоны
-    return new \Slim\Views\PhpRenderer(__DIR__ . '/../templates');
+    $renderer = new \Slim\Views\PhpRenderer(__DIR__ . '/../templates');
+    $renderer->setLayout('layout.php'); // сразу задаём общий layout
+    return $renderer;
 });
 
 $container->set('flash', function () {
