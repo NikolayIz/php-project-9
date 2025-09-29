@@ -7,6 +7,8 @@ use DI\Container;
 use App\UrlValidator;
 use App\Url;
 use App\UrlsRepository;
+use App\Check;
+use App\ChecksRepository;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -68,12 +70,12 @@ $app->get('/', function (Request $request, Response $response) {
 $app->get('/urls', function (Request $request, Response $response) {
     $urlsRepository = $this->get(UrlsRepository::class);
     $urls = $urlsRepository->all();//возвращает массив всех url
-
     $messages = $this->get('flash')->getMessages();
 
     $params = [
         'flash' => $messages,
-        'urls' => $urls
+        'urls' => $urls,
+        'checksRepo' => $this->get(ChecksRepository::class)
     ];
 
     return $this->get('renderer')->render($response, 'urls/index.phtml', $params);
@@ -107,17 +109,19 @@ $app->post('/urls', function (Request $request, Response $response) use ($router
             ->withRedirect($router->urlFor('urls.show', ['id' => $id]))
             ->withStatus(302);
     }
-    $urlFromDb = $urlsRepository->save($url);//Возвращает объект Url с обновлённым ID и временем создания.
+    //Возвращает объект Url с обновлённым ID и временем создания
+    $urlFromDb = $urlsRepository->save($url);
     $id = $urlFromDb->getId();
 
     $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
     return $response
         ->withRedirect($router->urlFor('urls.show', ['id' => $id]))
-        ->withStatus(302);
+        ->withStatus(201);
 });
 
 $app->get('/urls/{id}', function (Request $request, Response $response, $args) use ($router) {
-    $id = (int) $args['id'];             // получаем id из адреса
+    // получаем id из адреса
+    $id = (int) $args['id'];
     $urlsRepository = $this->get(UrlsRepository::class);
     $url = $urlsRepository->find($id);
 
@@ -127,12 +131,40 @@ $app->get('/urls/{id}', function (Request $request, Response $response, $args) u
         return $response->withStatus(404);
     }
 
+    $checksRepository = $this->get(ChecksRepository::class);
+    // все проверки в формате Check массивом возвращаем
+    $allChecksUrlId = $checksRepository->findAllByUrlId($id);
     $params = [
         'url' => $url,
+        'checks' => $allChecksUrlId,
         'flash' => $this->get('flash')->getMessages()
     ];
 
     return $this->get('renderer')->render($response, 'urls/show.phtml', $params);
 })->setName('urls.show');
+
+$app->post('/urls/{url_id}/checks', function (Request $request, Response $response, $args) use ($router) {
+    $urlId = (int) $args['url_id'];
+    // проверяем есть ли такой сайт по айди
+    $urlsRepository = $this->get(UrlsRepository::class);
+    
+    $urlIdFromBd = $urlsRepository->find($urlId);
+    
+    if (!$urlIdFromBd) {
+        $this->get('flash')->addMessage('errors', 'Произошла ошибка, проверка не выполнена');
+        return $response
+        ->withRedirect($router->urlFor('urls.show', ['id' => $urlId]))
+        ->withStatus(302);
+    }
+    // создаем новую сущность c url_id - проверка, а id и created_at само само создается
+    $check = new Check(url_id: $urlId);
+    // эту сущность добавляем в БД и возвращаем объект Check с обновлённым ID и временем создания
+    $checksRepository = $this->get(ChecksRepository::class);
+    $checkFromBd = $checksRepository->save($check);
+    $this->get('flash')->addMessage('success', 'Проверка успешно выполнена');
+    return $response
+        ->withRedirect($router->urlFor('urls.show', ['id' => $urlId]))
+        ->withStatus(302);
+});
 
 $app->run();
