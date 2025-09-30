@@ -87,12 +87,12 @@ $app->get('/urls', function (Request $request, Response $response) {
 $app->post('/urls', function (Request $request, Response $response) use ($router) {
     $data = $request->getParsedBody(); // [[url] => [name => 'https://example.com']]
     $urlData = $data['url']; // [name => 'https://example.com']
-    
+
     // посмотреть что прилетает из формы в локальном окружении НЕ РАБОТАЕТ ИЛИ КУДА ВЫВОДИТ ХЗ
 
     $errors = [];
     $errors = UrlValidator::validate($urlData); // url['name'] => 'https://example.com'
-    
+
     if (!empty($errors)) {
         $params = [
             'url' => $urlData,
@@ -102,7 +102,7 @@ $app->post('/urls', function (Request $request, Response $response) use ($router
     }
 
     $url = new Url($urlData['name']);
-    
+
     $urlsRepository = $this->get(UrlsRepository::class);
 
     if ($urlsRepository->findByName($url->getName()) !== null) {
@@ -114,9 +114,9 @@ $app->post('/urls', function (Request $request, Response $response) use ($router
     }
     //Возвращает объект Url с обновлённым ID и временем создания
     $urlFromDb = $urlsRepository->save($url);
-    
+
     $id = $urlFromDb->getId();
-    
+
     $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
     return $response
         ->withRedirect($router->urlFor('urls.show', ['id' => $id]))
