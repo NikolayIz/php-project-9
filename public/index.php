@@ -9,6 +9,7 @@ use App\Url;
 use App\UrlsRepository;
 use App\Check;
 use App\ChecksRepository;
+use GuzzleHttp\Client;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -154,8 +155,19 @@ $app->post('/urls/{url_id}/checks', function (Request $request, Response $respon
         ->withRedirect($router->urlFor('urls.show', ['id' => $urlId]))
         ->withStatus(302);
     }
-    // создаем новую сущность c url_id - проверка, а id и created_at само само создается
-    $check = new Check(url_id: $urlId);
+    // получает статус запроса к сайту обрабатывая исключения
+    $client = new \GuzzleHttp\Client();
+    $nameUrl = $urlIdFromBd->getName();
+    try {
+        $status_code = $client->request('GET', $nameUrl)->getStatusCode();
+    } catch (\GuzzleHttp\Exception\ClientException $e) {
+        $this->get('flash')->addMessage('errors', 'Сетевая ошибка, проверка не выполнена');
+        return $response->withRedirect($router->urlFor('urls.show', ['id' => $urlId]))->withStatus(302);
+    }
+
+    // создаем новую сущность c url_id и status_code- проверка, а id и created_at само создается
+    $check = new Check(url_id: $urlId, status_code: $status_code);
+
     // эту сущность добавляем в БД и возвращаем объект Check с обновлённым ID и временем создания
     $checksRepository = $this->get(ChecksRepository::class);
     $checkFromBd = $checksRepository->save($check);

@@ -15,11 +15,13 @@ class ChecksRepository
 
     public function save(Check $check): Check
     {
-        $sql = 'INSERT INTO url_checks (url_id, created_at) VALUES (:url_id, :created_at)';
+        $sql = 'INSERT INTO url_checks (url_id, status_code, created_at)
+            VALUES (:url_id, :status_code, :created_at)';
         $stmt = $this->pdo->prepare($sql);
 
         $stmt->execute([
             'url_id' => $check->getUrlId(),
+            'status_code' => $check->getStatusCode(),
             'created_at' => new \Carbon\Carbon($check->getCreatedAt()), // строка -> Carbon
         ]);
 
@@ -27,6 +29,7 @@ class ChecksRepository
         return new Check(
             url_id: $check->getUrlId(),
             id: (int) $this->pdo->lastInsertId(),
+            status_code: $check->getStatusCode(),
             created_at: new \Carbon\Carbon($check->getCreatedAt())
         );
     }
@@ -76,5 +79,18 @@ class ChecksRepository
         }
 
         return $data['created_at'];
+    }
+
+    public function findLastStatusCodeByUrlId(int $urlId): ?int
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM url_checks WHERE url_id = :url_id ORDER BY created_at DESC LIMIT 1');
+        $stmt->execute(['url_id' => $urlId]);
+        $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if (!$data) {
+            return null;
+        }
+
+        return (int) $data['status_code'];
     }
 }

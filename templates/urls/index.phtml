@@ -17,7 +17,7 @@
                             <td><?= $url->getId()?></td>
                             <td><a href="/urls/<?= $url->getId()?>"><?= $url->getName()?></a></td>
                             <td><?= $checksRepo->findLastCheckByUrlId($url->getId()) ?></td>
-                            <td></td>
+                            <td><?= $checksRepo->findLastStatusCodeByUrlId($url->getId()) ?></td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
