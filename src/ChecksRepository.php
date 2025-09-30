@@ -15,13 +15,16 @@ class ChecksRepository
 
     public function save(Check $check): Check
     {
-        $sql = 'INSERT INTO url_checks (url_id, status_code, created_at)
-            VALUES (:url_id, :status_code, :created_at)';
+        $sql = 'INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at)
+            VALUES (:url_id, :status_code, :h1, :title, :description, :created_at)';
         $stmt = $this->pdo->prepare($sql);
 
         $stmt->execute([
             'url_id' => $check->getUrlId(),
             'status_code' => $check->getStatusCode(),
+            'h1' => $check->getH1(),
+            'title' => $check->getTitle(),
+            'description' => $check->getDescription(),
             'created_at' => new \Carbon\Carbon($check->getCreatedAt()), // строка -> Carbon
         ]);
 
@@ -60,7 +63,7 @@ class ChecksRepository
         return array_map(fn($row) => new Check(
             url_id: (int) $row['url_id'],
             id: (int) $row['id'],
-            status_code: $row['status_code'] !== null ? (int) $row['status_code'] : null,
+            status_code: null ?? (int) $row['status_code'],
             h1: $row['h1'],
             title: $row['title'],
             description: $row['description'],

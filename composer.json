@@ -7,6 +7,11 @@
             "App\\": "src/"
         }
     },
+    "autoload-dev": {
+    "psr-4": {
+        "Tests\\": "tests/"
+    }
+    },
     "authors": [
         {
             "name": "NikolayIz",
@@ -24,11 +29,14 @@
         "slim/flash": "^0.4.0",
         "nesbot/carbon": "^3.10",
         "vlucas/valitron": "^1.4",
-        "guzzlehttp/guzzle": "^7.0@dev"
+        "guzzlehttp/guzzle": "^7.0@dev",
+        "imangazaliev/didom": "^2.0",
+        "illuminate/support": "^12.31"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^4.0",
-        "symfony/var-dumper": "^7.3"
+        "symfony/var-dumper": "^7.3",
+        "phpunit/phpunit": "^12"
     },
     "license": "MIT"
 }

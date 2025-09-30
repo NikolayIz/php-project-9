@@ -10,6 +10,8 @@ use App\UrlsRepository;
 use App\Check;
 use App\ChecksRepository;
 use GuzzleHttp\Client;
+use DiDom\Document;
+use DiDom\Query;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -155,7 +157,7 @@ $app->post('/urls/{url_id}/checks', function (Request $request, Response $respon
         ->withRedirect($router->urlFor('urls.show', ['id' => $urlId]))
         ->withStatus(302);
     }
-    // получает статус запроса к сайту обрабатывая исключения
+    // получает status_code, обрабатывая исключения
     $client = new \GuzzleHttp\Client();
     $nameUrl = $urlIdFromBd->getName();
     try {
@@ -164,9 +166,15 @@ $app->post('/urls/{url_id}/checks', function (Request $request, Response $respon
         $this->get('flash')->addMessage('errors', 'Сетевая ошибка, проверка не выполнена');
         return $response->withRedirect($router->urlFor('urls.show', ['id' => $urlId]))->withStatus(302);
     }
+    // получаем h1, title, description
+    $document = new Document($nameUrl, true);
 
-    // создаем новую сущность c url_id и status_code- проверка, а id и created_at само создается
-    $check = new Check(url_id: $urlId, status_code: $status_code);
+    $h1 = optional($document->first('h1'))->text();
+    $title = optional($document->first('title'))->text();
+    $desc = optional($document->first('meta[name=description]'))->attr('content');
+
+    // создаем новую сущность - id и created_at само создается
+    $check = new Check(url_id: $urlId, status_code: $status_code, h1: $h1, title: $title, description: $desc);
 
     // эту сущность добавляем в БД и возвращаем объект Check с обновлённым ID и временем создания
     $checksRepository = $this->get(ChecksRepository::class);

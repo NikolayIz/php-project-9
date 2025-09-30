@@ -14,3 +14,6 @@ lint:
 
 lint-fix:
 	./vendor/bin/phpcbf src public tests
+
+test:
+	composer exec --verbose phpunit tests
