@@ -14,8 +14,15 @@ class Check
     private ?string $description = null;
     private Carbon $created_at;
 
-    public function __construct(int $url_id, ?int $id = null, ?int $status_code = null, ?string $h1 = null, ?string $title = null, ?string $description = null, ?Carbon $created_at = null)
-    {
+    public function __construct(
+        int $url_id,
+        ?int $id = null,
+        ?int $status_code = null,
+        ?string $h1 = null,
+        ?string $title = null,
+        ?string $description = null,
+        ?Carbon $created_at = null
+    ) {
         $this->id = $id;
         $this->url_id = $url_id;
         $this->status_code = $status_code;

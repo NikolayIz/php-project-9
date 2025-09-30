@@ -147,9 +147,7 @@ $app->post('/urls/{url_id}/checks', function (Request $request, Response $respon
     $urlId = (int) $args['url_id'];
     // проверяем есть ли такой сайт по айди
     $urlsRepository = $this->get(UrlsRepository::class);
-    
     $urlIdFromBd = $urlsRepository->find($urlId);
-    
     if (!$urlIdFromBd) {
         $this->get('flash')->addMessage('errors', 'Произошла ошибка, проверка не выполнена');
         return $response
