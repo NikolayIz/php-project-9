@@ -13,7 +13,7 @@ use GuzzleHttp\Client;
 use DiDom\Document;
 use DiDom\Query;
 
-require __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 session_start();
 
@@ -24,7 +24,7 @@ $container = new Container();
 
 $env = getenv('DATABASE_URL');
 if ($env === false) {
-    throw new RuntimeException('DATABASE_URL is not set');
+    throw new \InvalidArgumentException('DATABASE_URL is not set');
 }
 $databaseUrl = parse_url($env);
 $username = $databaseUrl['user']; // janedoe
@@ -58,13 +58,12 @@ $container->set('flash', function () {
     return new \Slim\Flash\Messages();
 }); // Флеш сообщения в контейнер добавляем
 
-// $app = AppFactory::create();
 $app = AppFactory::createFromContainer($container);
 $app->addErrorMiddleware(true, true, true);
 
 $router = $app->getRouteCollector()->getRouteParser();
 
-$app->get('/', function (Request $request, Response $response) {
+$app->get('/', function (Response $response) {
     $messages = $this->get('flash')->getMessages();
 
     $params = [
@@ -74,7 +73,7 @@ $app->get('/', function (Request $request, Response $response) {
 })->setName('main');
 
 // обработчик на urls
-$app->get('/urls', function (Request $request, Response $response) {
+$app->get('/urls', function (Response $response) {
     $urlsRepository = $this->get(UrlsRepository::class);
     $urls = $urlsRepository->all();//возвращает массив всех url
     $messages = $this->get('flash')->getMessages();
@@ -126,7 +125,7 @@ $app->post('/urls', function (Request $request, Response $response) use ($router
         ->withStatus(302);
 });
 
-$app->get('/urls/{id}', function (Request $request, Response $response, $args) {
+$app->get('/urls/{id}', function (Response $response, $args) {
     // получаем id из адреса
     $id = (int) $args['id'];
     $urlsRepository = $this->get(UrlsRepository::class);
@@ -150,7 +149,7 @@ $app->get('/urls/{id}', function (Request $request, Response $response, $args) {
     return $this->get('renderer')->render($response, 'urls/show.phtml', $params);
 })->setName('urls.show');
 
-$app->post('/urls/{url_id}/checks', function (Request $request, Response $response, $args) use ($router) {
+$app->post('/urls/{url_id}/checks', function (Response $response, $args) use ($router) {
     $urlId = (int) $args['url_id'];
     // проверяем есть ли такой сайт по айди
     $urlsRepository = $this->get(UrlsRepository::class);
@@ -184,7 +183,7 @@ $app->post('/urls/{url_id}/checks', function (Request $request, Response $respon
 
     // эту сущность добавляем в БД и возвращаем объект Check с обновлённым ID и временем создания
     $checksRepository = $this->get(ChecksRepository::class);
-    $checkFromBd = $checksRepository->save($check);
+    $checksRepository->save($check);
     $this->get('flash')->addMessage('success', 'Страница успешно проверена');
     return $response
         ->withHeader('Location', $router->urlFor('urls.show', ['id' => (string) $urlId]))

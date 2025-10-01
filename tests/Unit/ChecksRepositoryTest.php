@@ -44,20 +44,20 @@ class ChecksRepositoryTest extends TestCase
 
     // Вспомогательный метод для создания проверки
     private function createCheck(
-        int $url_id = 1,
-        int $status_code = 200,
+        int $urlId = 1,
+        int $statusCode = 200,
         ?string $h1 = null,
         ?string $title = null,
         ?string $description = null,
-        ?Carbon $created_at = null
+        ?Carbon $createdAt = null
     ): Check {
         return new Check(
-            url_id: $url_id,
-            status_code: $status_code,
+            urlId: $urlId,
+            statusCode: $statusCode,
             h1: $h1,
             title: $title,
             description: $description,
-            created_at: $created_at ?? Carbon::now()
+            createdAt: $createdAt ?? Carbon::now()
         );
     }
 
@@ -75,8 +75,8 @@ class ChecksRepositoryTest extends TestCase
     // Проверка метода all()
     public function testAllReturnsArrayOfChecks(): void
     {
-        $this->repository->save($this->createCheck(url_id: 1));
-        $this->repository->save($this->createCheck(url_id: 2));
+        $this->repository->save($this->createCheck(urlId: 1));
+        $this->repository->save($this->createCheck(urlId: 2));
 
         $allChecks = $this->repository->all();
         $this->assertIsArray($allChecks);
@@ -88,9 +88,9 @@ class ChecksRepositoryTest extends TestCase
     // Проверка метода findAllByUrlId()
     public function testFindAllByUrlIdReturnsChecksForUrl(): void
     {
-        $this->repository->save($this->createCheck(url_id: 1));
-        $this->repository->save($this->createCheck(url_id: 1));
-        $this->repository->save($this->createCheck(url_id: 2));
+        $this->repository->save($this->createCheck(urlId: 1));
+        $this->repository->save($this->createCheck(urlId: 1));
+        $this->repository->save($this->createCheck(urlId: 2));
 
         $checks = $this->repository->findAllByUrlId(1);
         $this->assertCount(2, $checks);
@@ -101,8 +101,8 @@ class ChecksRepositoryTest extends TestCase
     // Проверка метода findLastCheckByUrlId()
     public function testFindLastCheckByUrlIdReturnsDate(): void
     {
-        $check1 = $this->createCheck(url_id: 1, created_at: Carbon::now());
-        $check2 = $this->createCheck(url_id: 1, created_at: Carbon::now()->addSecond());
+        $check1 = $this->createCheck(urlId: 1, createdAt: Carbon::now());
+        $check2 = $this->createCheck(urlId: 1, createdAt: Carbon::now()->addSecond());
         $this->repository->save($check1);
         $this->repository->save($check2);
 
@@ -113,11 +113,11 @@ class ChecksRepositoryTest extends TestCase
     // Проверка метода findLastStatusCodeByUrlId()
     public function testFindLastStatusCodeByUrlIdReturnsCode(): void
     {
-        $this->repository->save($this->createCheck(url_id: 1, status_code: 200, created_at: Carbon::now()));
+        $this->repository->save($this->createCheck(urlId: 1, statusCode: 200, createdAt: Carbon::now()));
         $this->repository->save($this->createCheck(
-            url_id: 1,
-            status_code: 404,
-            created_at:
+            urlId: 1,
+            statusCode: 404,
+            createdAt:
             Carbon::now()->addSecond()
         ));
 

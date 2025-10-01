@@ -13,13 +13,13 @@ class CheckTest extends TestCase
     {
         $createdAt = new \Carbon\Carbon('2024-01-01 12:00:00');
         $check = new \App\Check(
-            url_id: 1,
+            urlId: 1,
             id: 123,
-            status_code: 200,
+            statusCode: 200,
             h1: 'Test H1',
             title: 'Test Title',
             description: 'Test Description',
-            created_at: $createdAt
+            createdAt: $createdAt
         );
         $this->assertEquals(123, $check->getId());
         $this->assertEquals(1, $check->getUrlId());
@@ -37,7 +37,7 @@ class CheckTest extends TestCase
         // фиксанция текущего времени для тестов
         Carbon::setTestNow($now);
 
-        $check = new Check(url_id: 1);
+        $check = new Check(urlId: 1);
 
         $this->assertEquals($now, $check->getCreatedAt());
         // сброс фиксации

@@ -7,29 +7,29 @@ use Carbon\Carbon;
 class Check
 {
     private ?int $id = null;
-    private int $url_id;
-    private ?int $status_code = null;
+    private int $urlId;
+    private ?int $statusCode = null;
     private ?string $h1 = null;
     private ?string $title = null;
     private ?string $description = null;
-    private Carbon $created_at;
+    private Carbon $createdAt;
 
     public function __construct(
-        int $url_id,
+        int $urlId,
         ?int $id = null,
-        ?int $status_code = null,
+        ?int $statusCode = null,
         ?string $h1 = null,
         ?string $title = null,
         ?string $description = null,
-        ?Carbon $created_at = null
+        ?Carbon $createdAt = null
     ) {
         $this->id = $id;
-        $this->url_id = $url_id;
-        $this->status_code = $status_code;
+        $this->urlId = $urlId;
+        $this->statusCode = $statusCode;
         $this->h1 = $h1;
         $this->title = $title;
         $this->description = $description;
-        $this->created_at = $created_at ?? Carbon::now();
+        $this->createdAt = $createdAt ?? Carbon::now();
     }
 
     public function getId(): ?int
@@ -39,12 +39,12 @@ class Check
 
     public function getUrlId(): int
     {
-        return $this->url_id;
+        return $this->urlId;
     }
 
     public function getStatusCode(): ?int
     {
-        return $this->status_code;
+        return $this->statusCode;
     }
 
     public function getH1(): ?string
@@ -64,6 +64,6 @@ class Check
 
     public function getCreatedAt(): string
     {
-        return $this->created_at->toDateTimeString();
+        return $this->createdAt->toDateTimeString();
     }
 }

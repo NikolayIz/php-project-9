@@ -30,10 +30,13 @@ class ChecksRepository
 
         // Получаем ID вставленной записи и возвращаем обновлённый объект
         return new Check(
-            url_id: $check->getUrlId(),
+            urlId: $check->getUrlId(),
             id: (int) $this->pdo->lastInsertId(),
-            status_code: $check->getStatusCode(),
-            created_at: new \Carbon\Carbon($check->getCreatedAt())
+            statusCode: $check->getStatusCode(),
+            h1: $check->getH1(),
+            title: $check->getTitle(),
+            description: $check->getDescription(),
+            createdAt: new \Carbon\Carbon($check->getCreatedAt())
         );
     }
     /**
@@ -45,13 +48,13 @@ class ChecksRepository
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
         return array_map(fn($row) => new Check(
-            url_id: (int) $row['url_id'],
+            urlId: (int) $row['url_id'],
             id: (int) $row['id'],
-            status_code: $row['status_code'] !== null ? (int) $row['status_code'] : null,
+            statusCode: $row['status_code'] !== null ? (int) $row['status_code'] : null,
             h1: $row['h1'],
             title: $row['title'],
             description: $row['description'],
-            created_at: new \Carbon\Carbon($row['created_at'])
+            createdAt: new \Carbon\Carbon($row['created_at'])
         ), $rows);
     }
 
@@ -61,13 +64,13 @@ class ChecksRepository
         $stmt->execute(['url_id' => $urlId]);
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         return array_map(fn($row) => new Check(
-            url_id: (int) $row['url_id'],
+            urlId: (int) $row['url_id'],
             id: (int) $row['id'],
-            status_code: $row['status_code'] !== null ? (int) $row['status_code'] : null,
+            statusCode: $row['status_code'] !== null ? (int) $row['status_code'] : null,
             h1: $row['h1'],
             title: $row['title'],
             description: $row['description'],
-            created_at: new \Carbon\Carbon($row['created_at'])
+            createdAt: new \Carbon\Carbon($row['created_at'])
         ), $rows);
     }
 
