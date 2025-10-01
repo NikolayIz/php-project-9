@@ -63,7 +63,7 @@ class ChecksRepository
         return array_map(fn($row) => new Check(
             url_id: (int) $row['url_id'],
             id: (int) $row['id'],
-            status_code: (int) $row['status_code'] ?? null,
+            status_code: $row['status_code'] !== null ? (int) $row['status_code'] : null,
             h1: $row['h1'],
             title: $row['title'],
             description: $row['description'],

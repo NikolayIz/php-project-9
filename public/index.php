@@ -177,7 +177,7 @@ $app->post('/urls/{url_id}/checks', function (Request $request, Response $respon
 
     $h1 = optional($document->first('h1'))->text();
     $title = optional($document->first('title'))->text();
-    $desc = $document->first('meta[name=description]')?->attr('content');
+    $desc = $document->first('meta[name=description]')?->getAttribute('content') ?? null;
 
     // создаем новую сущность - id и created_at само создается
     $check = new Check(url_id: $urlId, status_code: $status_code, h1: $h1, title: $title, description: $desc);
