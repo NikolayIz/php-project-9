@@ -88,17 +88,15 @@ $app->post('/urls', function (Request $request, Response $response) use ($router
     $data = $request->getParsedBody(); // [[url] => [name => 'https://example.com']]
     $urlData = $data['url']; // [name => 'https://example.com']
 
-    // посмотреть что прилетает из формы в локальном окружении НЕ РАБОТАЕТ ИЛИ КУДА ВЫВОДИТ ХЗ
-
     $errors = [];
     $errors = UrlValidator::validate($urlData); // url['name'] => 'https://example.com'
 
     if (!empty($errors)) {
         $params = [
             'url' => $urlData,
-            'errors' => $errors
+            'errors' => $errors,
         ];
-        return $this->get('renderer')->render($response, 'index.phtml', $params);
+        return $this->get('renderer')->render($response->withStatus(422), 'index.phtml', $params);
     }
 
     $url = new Url($urlData['name']);
