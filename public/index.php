@@ -63,7 +63,7 @@ $app->addErrorMiddleware(true, true, true);
 
 $router = $app->getRouteCollector()->getRouteParser();
 
-$app->get('/', function (Response $response) {
+$app->get('/', function (Request $_request, Response $response) {
     $messages = $this->get('flash')->getMessages();
 
     $params = [
@@ -73,7 +73,7 @@ $app->get('/', function (Response $response) {
 })->setName('main');
 
 // обработчик на urls
-$app->get('/urls', function (Response $response) {
+$app->get('/urls', function (Request $_request, Response $response) {
     $urlsRepository = $this->get(UrlsRepository::class);
     $urls = $urlsRepository->all();//возвращает массив всех url
     $messages = $this->get('flash')->getMessages();
@@ -125,7 +125,7 @@ $app->post('/urls', function (Request $request, Response $response) use ($router
         ->withStatus(302);
 });
 
-$app->get('/urls/{id}', function (Response $response, $args) {
+$app->get('/urls/{id}', function (Request $_request, Response $response, $args) {
     // получаем id из адреса
     $id = (int) $args['id'];
     $urlsRepository = $this->get(UrlsRepository::class);
@@ -149,7 +149,7 @@ $app->get('/urls/{id}', function (Response $response, $args) {
     return $this->get('renderer')->render($response, 'urls/show.phtml', $params);
 })->setName('urls.show');
 
-$app->post('/urls/{url_id}/checks', function (Response $response, $args) use ($router) {
+$app->post('/urls/{url_id}/checks', function (Request $_request, Response $response, $args) use ($router) {
     $urlId = (int) $args['url_id'];
     // проверяем есть ли такой сайт по айди
     $urlsRepository = $this->get(UrlsRepository::class);
@@ -164,7 +164,7 @@ $app->post('/urls/{url_id}/checks', function (Response $response, $args) use ($r
     $client = new \GuzzleHttp\Client();
     $nameUrl = $urlIdFromBd->getName();
     try {
-        $status_code = $client->request('GET', $nameUrl)->getStatusCode();
+        $statusCode = $client->request('GET', $nameUrl)->getStatusCode();
     } catch (\GuzzleHttp\Exception\ClientException $e) {
         $this->get('flash')->addMessage('errors', 'Сетевая ошибка, проверка не выполнена');
         return $response
@@ -179,7 +179,7 @@ $app->post('/urls/{url_id}/checks', function (Response $response, $args) use ($r
     $desc = $document->first('meta[name=description]')?->getAttribute('content') ?? null;
 
     // создаем новую сущность - id и created_at само создается
-    $check = new Check(url_id: $urlId, status_code: $status_code, h1: $h1, title: $title, description: $desc);
+    $check = new Check(urlId: $urlId, statusCode: $statusCode, h1: $h1, title: $title, description: $desc);
 
     // эту сущность добавляем в БД и возвращаем объект Check с обновлённым ID и временем создания
     $checksRepository = $this->get(ChecksRepository::class);
