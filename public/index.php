@@ -22,7 +22,11 @@ $container = new Container();
 // У строки следующий формат: {provider}://{user}:{password}@{host}:{port}/{db}
 // export DATABASE_URL=postgresql://janedoe:mypassword@localhost:5432/mydb
 
-$databaseUrl = parse_url(getenv('DATABASE_URL'));
+$env = getenv('DATABASE_URL');
+if ($env === false) {
+    throw new RuntimeException('DATABASE_URL is not set');
+}
+$databaseUrl = parse_url($env);
 $username = $databaseUrl['user']; // janedoe
 $password = $databaseUrl['pass']; // mypassword
 $host = $databaseUrl['host']; // localhost
@@ -86,10 +90,10 @@ $app->get('/urls', function (Request $request, Response $response) {
 
 $app->post('/urls', function (Request $request, Response $response) use ($router) {
     $data = $request->getParsedBody(); // [[url] => [name => 'https://example.com']]
-    $urlData = $data['url']; // [name => 'https://example.com']
+    $urlData = $data['url'] ?? ['name' => null]; // [name => 'https://example.com']
 
     $errors = [];
-    $errors = UrlValidator::validate($urlData); // url['name'] => 'https://example.com'
+    $errors = UrlValidator::validate($urlData); // array c ошибками
 
     if (!empty($errors)) {
         $params = [
@@ -107,7 +111,7 @@ $app->post('/urls', function (Request $request, Response $response) use ($router
         $id = $urlsRepository->findByName($url->getName())->getId();
         $this->get('flash')->addMessage('success', 'Страница уже существует');
         return $response
-            ->withRedirect($router->urlFor('urls.show', ['id' => $id]))
+            ->withHeader('Location', $router->urlFor('urls.show', ['id' => (string) $id]))
             ->withStatus(302);
     }
     //Возвращает объект Url с обновлённым ID и временем создания
@@ -117,7 +121,7 @@ $app->post('/urls', function (Request $request, Response $response) use ($router
 
     $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
     return $response
-        ->withRedirect($router->urlFor('urls.show', ['id' => $id]))
+        ->withHeader('Location', $router->urlFor('urls.show', ['id' => (string) $id]))
         ->withStatus(302);
 });
 
@@ -153,7 +157,7 @@ $app->post('/urls/{url_id}/checks', function (Request $request, Response $respon
     if (!$urlIdFromBd) {
         $this->get('flash')->addMessage('errors', 'Произошла ошибка, проверка не выполнена');
         return $response
-        ->withRedirect($router->urlFor('urls.show', ['id' => $urlId]))
+        ->withHeader('Location', $router->urlFor('urls.show', ['id' => (string) $urlId]))
         ->withStatus(302);
     }
     // получает status_code, обрабатывая исключения
@@ -163,14 +167,17 @@ $app->post('/urls/{url_id}/checks', function (Request $request, Response $respon
         $status_code = $client->request('GET', $nameUrl)->getStatusCode();
     } catch (\GuzzleHttp\Exception\ClientException $e) {
         $this->get('flash')->addMessage('errors', 'Сетевая ошибка, проверка не выполнена');
-        return $response->withRedirect($router->urlFor('urls.show', ['id' => $urlId]))->withStatus(302);
+        return $response
+            ->withHeader('Location', $router->urlFor('urls.show', ['id' => (string) $urlId]))
+            ->withStatus(302);
     }
     // получаем h1, title, description
     $document = new Document($nameUrl, true);
 
     $h1 = optional($document->first('h1'))->text();
     $title = optional($document->first('title'))->text();
-    $desc = optional($document->first('meta[name=description]'))->attr('content');
+    $meta = optional($document->first('meta[name=description]'));
+    $desc = $meta ? $meta->attr('content') : null;
 
     // создаем новую сущность - id и created_at само создается
     $check = new Check(url_id: $urlId, status_code: $status_code, h1: $h1, title: $title, description: $desc);
@@ -180,7 +187,7 @@ $app->post('/urls/{url_id}/checks', function (Request $request, Response $respon
     $checkFromBd = $checksRepository->save($check);
     $this->get('flash')->addMessage('success', 'Страница успешно проверена');
     return $response
-        ->withRedirect($router->urlFor('urls.show', ['id' => $urlId]))
+        ->withHeader('Location', $router->urlFor('urls.show', ['id' => (string) $urlId]))
         ->withStatus(302);
 });
 
