@@ -63,7 +63,9 @@ $app->addErrorMiddleware(true, true, true);
 
 $router = $app->getRouteCollector()->getRouteParser();
 
-$app->get('/', function (Request $_request, Response $response) {
+$app->get('/', function (Request $request, Response $response) {
+    /** @noinspection PhpUnusedParameterInspection */
+    $unusedRequest = $request;
     $messages = $this->get('flash')->getMessages();
 
     $params = [
@@ -73,7 +75,9 @@ $app->get('/', function (Request $_request, Response $response) {
 })->setName('main');
 
 // обработчик на urls
-$app->get('/urls', function (Request $_request, Response $response) {
+$app->get('/urls', function (Request $request, Response $response) {
+    /** @noinspection PhpUnusedParameterInspection */
+    $unusedRequest = $request;
     $urlsRepository = $this->get(UrlsRepository::class);
     $urls = $urlsRepository->all();//возвращает массив всех url
     $messages = $this->get('flash')->getMessages();
@@ -125,7 +129,9 @@ $app->post('/urls', function (Request $request, Response $response) use ($router
         ->withStatus(302);
 });
 
-$app->get('/urls/{id}', function (Request $_request, Response $response, $args) {
+$app->get('/urls/{id}', function (Request $request, Response $response, $args) {
+    /** @noinspection PhpUnusedParameterInspection */
+    $unusedRequest = $request;
     // получаем id из адреса
     $id = (int) $args['id'];
     $urlsRepository = $this->get(UrlsRepository::class);
@@ -149,7 +155,10 @@ $app->get('/urls/{id}', function (Request $_request, Response $response, $args) 
     return $this->get('renderer')->render($response, 'urls/show.phtml', $params);
 })->setName('urls.show');
 
-$app->post('/urls/{url_id}/checks', function (Request $_request, Response $response, $args) use ($router) {
+$app->post('/urls/{url_id}/checks', function (Request $request, Response $response, $args) use ($router) {
+    /** @noinspection PhpUnusedParameterInspection */
+    $unusedRequest = $request;
+
     $urlId = (int) $args['url_id'];
     // проверяем есть ли такой сайт по айди
     $urlsRepository = $this->get(UrlsRepository::class);

@@ -13,6 +13,19 @@ class ChecksRepository
         $this->pdo = $conn;
     }
 
+    protected function createCheckFromRow(array $row): Check
+    {
+        return new Check(
+            urlId: (int) $row['url_id'],
+            id: (int) $row['id'],
+            statusCode: $row['status_code'] !== null ? (int) $row['status_code'] : null,
+            h1: $row['h1'],
+            title: $row['title'],
+            description: $row['description'],
+            createdAt: new Carbon($row['created_at'])
+        );
+    }
+
     public function save(Check $check): Check
     {
         $sql = 'INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at)
@@ -29,15 +42,17 @@ class ChecksRepository
         ]);
 
         // Получаем ID вставленной записи и возвращаем обновлённый объект
-        return new Check(
-            urlId: $check->getUrlId(),
-            id: (int) $this->pdo->lastInsertId(),
-            statusCode: $check->getStatusCode(),
-            h1: $check->getH1(),
-            title: $check->getTitle(),
-            description: $check->getDescription(),
-            createdAt: new \Carbon\Carbon($check->getCreatedAt())
-        );
+        $row = [
+        'url_id' => $check->getUrlId(),
+        'id' => (int) $this->pdo->lastInsertId(),
+        'status_code' => $check->getStatusCode(),
+        'h1' => $check->getH1(),
+        'title' => $check->getTitle(),
+        'description' => $check->getDescription(),
+        'created_at' => $check->getCreatedAt(),
+        ];
+
+        return $this->createCheckFromRow($row);
     }
     /**
      * Возвращает все СHecks в виде массива объектов Check
@@ -47,15 +62,7 @@ class ChecksRepository
         $stmt = $this->pdo->query('SELECT * FROM url_checks ORDER BY created_at DESC');
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-        return array_map(fn($row) => new Check(
-            urlId: (int) $row['url_id'],
-            id: (int) $row['id'],
-            statusCode: $row['status_code'] !== null ? (int) $row['status_code'] : null,
-            h1: $row['h1'],
-            title: $row['title'],
-            description: $row['description'],
-            createdAt: new \Carbon\Carbon($row['created_at'])
-        ), $rows);
+        return array_map(fn($row) => $this->createCheckFromRow($row), $rows);
     }
 
     public function findAllByUrlId(int $urlId): array
@@ -63,40 +70,34 @@ class ChecksRepository
         $stmt = $this->pdo->prepare('SELECT * FROM url_checks WHERE url_id = :url_id ORDER BY created_at DESC');
         $stmt->execute(['url_id' => $urlId]);
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        return array_map(fn($row) => new Check(
-            urlId: (int) $row['url_id'],
-            id: (int) $row['id'],
-            statusCode: $row['status_code'] !== null ? (int) $row['status_code'] : null,
-            h1: $row['h1'],
-            title: $row['title'],
-            description: $row['description'],
-            createdAt: new \Carbon\Carbon($row['created_at'])
-        ), $rows);
+        return array_map(fn($row) => $this->createCheckFromRow($row), $rows);
     }
 
-    public function findLastCheckByUrlId(int $urlId): ?string
+    public function findLastCreatedAtByUrlId(int $urlId): ?string
     {
         $stmt = $this->pdo->prepare('SELECT * FROM url_checks WHERE url_id = :url_id ORDER BY created_at DESC LIMIT 1');
         $stmt->execute(['url_id' => $urlId]);
-        $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        if (!$data) {
+        if (!$row) {
             return null;
         }
 
-        return $data['created_at'];
+        $check = $this->createCheckFromRow($row);
+        return $check->getCreatedAt();
     }
 
     public function findLastStatusCodeByUrlId(int $urlId): ?int
     {
         $stmt = $this->pdo->prepare('SELECT * FROM url_checks WHERE url_id = :url_id ORDER BY created_at DESC LIMIT 1');
         $stmt->execute(['url_id' => $urlId]);
-        $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        if (!$data) {
+        if (!$row) {
             return null;
         }
 
-        return (int) $data['status_code'];
+        $check = $this->createCheckFromRow($row);
+        return $check->getStatusCode();
     }
 }

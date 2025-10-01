@@ -98,15 +98,15 @@ class ChecksRepositoryTest extends TestCase
         $this->assertSame(1, $checks[1]->getUrlId());
     }
 
-    // Проверка метода findLastCheckByUrlId()
-    public function testFindLastCheckByUrlIdReturnsDate(): void
+    // Проверка метода findLastCreatedAtByUrlId()
+    public function testFindLastCreatedAtByUrlIdReturnsDate(): void
     {
         $check1 = $this->createCheck(urlId: 1, createdAt: Carbon::now());
         $check2 = $this->createCheck(urlId: 1, createdAt: Carbon::now()->addSecond());
         $this->repository->save($check1);
         $this->repository->save($check2);
 
-        $lastDate = $this->repository->findLastCheckByUrlId(1);
+        $lastDate = $this->repository->findLastCreatedAtByUrlId(1);
         $this->assertEquals($check2->getCreatedAt(), $lastDate);
     }
 
