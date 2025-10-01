@@ -2,6 +2,7 @@
 [![Actions Status](https://github.com/NikolayIz/php-project-9/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/NikolayIz/php-project-9/actions)
 ### Project Status and Quality
 [![PHP-project-9 workflow](https://github.com/NikolayIz/php-project-9/actions/workflows/main.yml/badge.svg)](https://github.com/NikolayIz/php-project-9/actions/workflows/main.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=NikolayIz_php-project-9&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=NikolayIz_php-project-9)
 
 # PHP Page analyzer
 ### Domen:
