@@ -25,3 +25,4 @@ export DATABASE_URL=postgresql://janedoe:mypassword@localhost:5432/mydb
 
 Для запуска локального сервера:
 `make start`
+
