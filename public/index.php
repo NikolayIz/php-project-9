@@ -180,7 +180,7 @@ $app->post('/urls/{url_id}/checks', function (Request $request, Response $respon
     // эту сущность добавляем в БД и возвращаем объект Check с обновлённым ID и временем создания
     $checksRepository = $this->get(ChecksRepository::class);
     $checkFromBd = $checksRepository->save($check);
-    $this->get('flash')->addMessage('success', 'Проверка успешно выполнена');
+    $this->get('flash')->addMessage('success', 'Страница успешно проверена');
     return $response
         ->withRedirect($router->urlFor('urls.show', ['id' => $urlId]))
         ->withStatus(302);
