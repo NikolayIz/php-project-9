@@ -65,7 +65,7 @@ $router = $app->getRouteCollector()->getRouteParser();
 
 $app->get('/', function (Request $request, Response $response) {
     /** @noinspection PhpUnusedParameterInspection */
-    $unusedRequest = $request;
+
     $messages = $this->get('flash')->getMessages();
 
     $params = [
@@ -77,7 +77,7 @@ $app->get('/', function (Request $request, Response $response) {
 // обработчик на urls
 $app->get('/urls', function (Request $request, Response $response) {
     /** @noinspection PhpUnusedParameterInspection */
-    $unusedRequest = $request;
+
     $urlsRepository = $this->get(UrlsRepository::class);
     $urls = $urlsRepository->all();//возвращает массив всех url
     $messages = $this->get('flash')->getMessages();
@@ -131,7 +131,7 @@ $app->post('/urls', function (Request $request, Response $response) use ($router
 
 $app->get('/urls/{id}', function (Request $request, Response $response, $args) {
     /** @noinspection PhpUnusedParameterInspection */
-    $unusedRequest = $request;
+
     // получаем id из адреса
     $id = (int) $args['id'];
     $urlsRepository = $this->get(UrlsRepository::class);
@@ -157,7 +157,6 @@ $app->get('/urls/{id}', function (Request $request, Response $response, $args) {
 
 $app->post('/urls/{url_id}/checks', function (Request $request, Response $response, $args) use ($router) {
     /** @noinspection PhpUnusedParameterInspection */
-    $unusedRequest = $request;
 
     $urlId = (int) $args['url_id'];
     // проверяем есть ли такой сайт по айди
