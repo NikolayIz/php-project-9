@@ -41,8 +41,10 @@ make test-coverage
 
 ### Project Structure
 src/ — source code
+
 tests/ — unit tests
-public/ — front-end / public files
+
+public/ — front-end
 
 ### License
 MIT
