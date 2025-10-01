@@ -64,7 +64,6 @@ $app->addErrorMiddleware(true, true, true);
 $router = $app->getRouteCollector()->getRouteParser();
 
 $app->get('/', function (Request $request, Response $response) {
-    /** @noinspection PhpUnusedParameterInspection */
 
     $messages = $this->get('flash')->getMessages();
 
@@ -76,7 +75,6 @@ $app->get('/', function (Request $request, Response $response) {
 
 // обработчик на urls
 $app->get('/urls', function (Request $request, Response $response) {
-    /** @noinspection PhpUnusedParameterInspection */
 
     $urlsRepository = $this->get(UrlsRepository::class);
     $urls = $urlsRepository->all();//возвращает массив всех url
@@ -130,7 +128,6 @@ $app->post('/urls', function (Request $request, Response $response) use ($router
 });
 
 $app->get('/urls/{id}', function (Request $request, Response $response, $args) {
-    /** @noinspection PhpUnusedParameterInspection */
 
     // получаем id из адреса
     $id = (int) $args['id'];
@@ -156,7 +153,6 @@ $app->get('/urls/{id}', function (Request $request, Response $response, $args) {
 })->setName('urls.show');
 
 $app->post('/urls/{url_id}/checks', function (Request $request, Response $response, $args) use ($router) {
-    /** @noinspection PhpUnusedParameterInspection */
 
     $urlId = (int) $args['url_id'];
     // проверяем есть ли такой сайт по айди
