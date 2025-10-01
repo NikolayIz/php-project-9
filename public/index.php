@@ -90,6 +90,7 @@ $app->get('/urls', function (Request $request, Response $response) {
 
 $app->post('/urls', function (Request $request, Response $response) use ($router) {
     $data = $request->getParsedBody(); // [[url] => [name => 'https://example.com']]
+    $data = is_array($data) ? $data : [];
     $urlData = $data['url'] ?? ['name' => null]; // [name => 'https://example.com']
 
     $errors = [];
@@ -125,7 +126,7 @@ $app->post('/urls', function (Request $request, Response $response) use ($router
         ->withStatus(302);
 });
 
-$app->get('/urls/{id}', function (Request $request, Response $response, $args) use ($router) {
+$app->get('/urls/{id}', function (Request $request, Response $response, $args) {
     // получаем id из адреса
     $id = (int) $args['id'];
     $urlsRepository = $this->get(UrlsRepository::class);
@@ -176,8 +177,7 @@ $app->post('/urls/{url_id}/checks', function (Request $request, Response $respon
 
     $h1 = optional($document->first('h1'))->text();
     $title = optional($document->first('title'))->text();
-    $meta = optional($document->first('meta[name=description]'));
-    $desc = $meta ? $meta->attr('content') : null;
+    $desc = $document->first('meta[name=description]')?->attr('content');
 
     // создаем новую сущность - id и created_at само создается
     $check = new Check(url_id: $urlId, status_code: $status_code, h1: $h1, title: $title, description: $desc);

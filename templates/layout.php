@@ -11,7 +11,7 @@
 <body class="min-vh-100 d-flex flex-column">
     <?php require __DIR__ . '/layout/header.phtml'; ?>
     <?php require __DIR__ . '/layout/alerts.phtml'; ?>
-        <?=$content?>
+        <?= $content = $content ?? null ?>
     <?php require __DIR__ . '/layout/footer.phtml'; ?>
 </body>
 </html>
