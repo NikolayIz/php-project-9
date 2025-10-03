@@ -84,18 +84,16 @@ $app->get('/urls', function (Request $request, Response $response) {
     $urlsRepository = $this->get(UrlsRepository::class);
     $urls = $urlsRepository->all();//возвращает массив всех url
     $messages = $this->get('flash')->getMessages();
-    $table = [];
-    foreach ($urls as $url) {
-        $row['id'] = $url->getId();
-        $row['name'] = $url->getName();
-        $row['last_check'] = $this
+    $table = array_map(fn($url) => [
+        'id' => $url->getId(),
+        'name' => $url->getName(),
+        'last_check' => $this
             ->get(ChecksRepository::class)
-            ->findLastCreatedAtByUrlId($url->getId());
-        $row['last_status_code'] = $this
+            ->findLastCreatedAtByUrlId($url->getId()),
+        'last_status_code' => $this
             ->get(ChecksRepository::class)
-            ->findLastStatusCodeByUrlId($url->getId());
-        $table[] = $row;
-    }
+            ->findLastStatusCodeByUrlId($url->getId()),
+    ], $urls);
     $params = [
         'flash' => $messages,
         'urls' => $urls,
@@ -158,9 +156,17 @@ $app->get('/urls/{id}', function (Request $request, Response $response, $args) {
     $checksRepository = $this->get(ChecksRepository::class);
     // все проверки в формате Check массивом возвращаем
     $allChecksUrlId = $checksRepository->findAllByUrlId($id);
+    $table = array_map(fn($check) => [
+        'id' => $check->getId(),
+        'status_code' => $check->getStatusCode(),
+        'h1' => $check->getH1(),
+        'title' => $check->getTitle(),
+        'description' => $check->getDescription(),
+        'created_at' => $check->getCreatedAt(),
+    ], $allChecksUrlId);
     $params = [
         'url' => $url,
-        'checks' => $allChecksUrlId,
+        'table' => $table,
         'flash' => $this->get('flash')->getMessages()
     ];
     return $this->get(Twig::class)->render($response, 'urls/show.twig', $params);

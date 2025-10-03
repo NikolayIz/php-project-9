@@ -3,7 +3,7 @@
 {% block content %}
 <main class="flex-grow-1">
         <div class="container-lg mt-3">
-            <h1>Сайт: {{ url.getName()|e }} ?></h1>
+            <h1>Сайт: {{ url.getName()|e }}</h1>
             <div class="table-responsive">
                 <table class="table table-bordered table-hover text-nowrap" data-test="url">
                     <tbody>
@@ -38,14 +38,14 @@
                     </tr>
                 </thead>
                 <tbody> 
-                    {% for check in checks %}
+                    {% for row in table %}
                     <tr>
-                        <td>{{ check.getId() }}</td>
-                        <td>{{ check.getStatusCode() }}</td>
-                        <td class="text-break">{{ check.getH1()|e }}</td>
-                        <td class="text-break">{{ check.getTitle()|e }}</td>
-                        <td class="text-break">{{ check.getDescription()|e }}</td>
-                        <td>{{ check.getCreatedAt() }}</td>
+                        <td>{{ row.id }}</td>
+                        <td>{{ row.status_code }}</td>
+                        <td class="text-break">{{ row.h1|e }}</td>
+                        <td class="text-break">{{ row.title|e }}</td>
+                        <td class="text-break">{{ row.description|e }}</td>
+                        <td>{{ row.created_at }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
