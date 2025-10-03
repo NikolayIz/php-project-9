@@ -1,5 +1,8 @@
 <?php
 
+// Подавляем deprecated предупреждения из-за несовместимости DiDom\Document с php 8.3
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
@@ -47,15 +50,8 @@ $container->set(\PDO::class, function () use ($host, $dbName, $username, $passwo
     }
 });
 
-// $container->set('renderer', function () {
-//     // Параметром передается базовая директория, в которой будут храниться шаблоны
-//     $renderer = new \Slim\Views\PhpRenderer(__DIR__ . '/../templates');
-//     $renderer->setLayout('layout.php'); // сразу задаём общий layout
-//     return $renderer;
-// });
-
 // Set view in Container
-$container->set(Twig::class, function() {
+$container->set(Twig::class, function () {
     return Twig::create(__DIR__ . '/../templates', ['cache' => false]);
 });
 
