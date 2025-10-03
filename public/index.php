@@ -10,6 +10,8 @@ use App\UrlsRepository;
 use App\Check;
 use App\ChecksRepository;
 use DiDom\Document;
+use Slim\Views\Twig;
+use Slim\Views\TwigMiddleware;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -45,19 +47,28 @@ $container->set(\PDO::class, function () use ($host, $dbName, $username, $passwo
     }
 });
 
-$container->set('renderer', function () {
-    // Параметром передается базовая директория, в которой будут храниться шаблоны
-    $renderer = new \Slim\Views\PhpRenderer(__DIR__ . '/../templates');
-    $renderer->setLayout('layout.php'); // сразу задаём общий layout
-    return $renderer;
+// $container->set('renderer', function () {
+//     // Параметром передается базовая директория, в которой будут храниться шаблоны
+//     $renderer = new \Slim\Views\PhpRenderer(__DIR__ . '/../templates');
+//     $renderer->setLayout('layout.php'); // сразу задаём общий layout
+//     return $renderer;
+// });
+
+// Set view in Container
+$container->set(Twig::class, function() {
+    return Twig::create(__DIR__ . '/../templates', ['cache' => false]);
 });
 
 $container->set('flash', function () {
     return new \Slim\Flash\Messages();
 }); // Флеш сообщения в контейнер добавляем
 
+// Create App from container
 $app = AppFactory::createFromContainer($container);
 $app->addErrorMiddleware(true, true, true);
+
+// Add Twig-View Middleware
+$app->add(TwigMiddleware::create($app, $container->get(Twig::class)));
 
 $router = $app->getRouteCollector()->getRouteParser();
 
@@ -68,7 +79,7 @@ $app->get('/', function (Request $request, Response $response) {
     $params = [
         'flash' => $messages
     ];
-    return $this->get('renderer')->render($response, 'index.phtml', $params);
+    return $this->get(Twig::class)->render($response, 'index.twig', $params);
 })->setName('main');
 
 // обработчик на urls
@@ -95,7 +106,7 @@ $app->get('/urls', function (Request $request, Response $response) {
         'table' => $table
     ];
 
-    return $this->get('renderer')->render($response, 'urls/index.phtml', $params);
+    return $this->get(Twig::class)->render($response, 'urls/index.twig', $params);
 })->setName('urls.index');
 
 $app->post('/urls', function (Request $request, Response $response) use ($router) {
@@ -110,7 +121,7 @@ $app->post('/urls', function (Request $request, Response $response) use ($router
             'url' => $urlData,
             'errors' => $errors,
         ];
-        return $this->get('renderer')->render($response->withStatus(422), 'index.phtml', $params);
+        return $this->get(Twig::class)->render($response->withStatus(422), 'index.twig', $params);
     }
 
     $url = new Url($urlData['name']);
@@ -156,8 +167,7 @@ $app->get('/urls/{id}', function (Request $request, Response $response, $args) {
         'checks' => $allChecksUrlId,
         'flash' => $this->get('flash')->getMessages()
     ];
-
-    return $this->get('renderer')->render($response, 'urls/show.phtml', $params);
+    return $this->get(Twig::class)->render($response, 'urls/show.twig', $params);
 })->setName('urls.show');
 
 $app->post('/urls/{url_id}/checks', function (Request $request, Response $response, $args) use ($router) {

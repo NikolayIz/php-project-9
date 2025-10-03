@@ -33,7 +33,8 @@
         "vlucas/valitron": "^1.4",
         "guzzlehttp/guzzle": "^7.0",
         "imangazaliev/didom": "^2.0",
-        "illuminate/support": "^12.31"
+        "illuminate/support": "^12.31",
+        "slim/twig-view": "^3.4"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^4.0",

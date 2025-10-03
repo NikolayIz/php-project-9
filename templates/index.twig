@@ -1,3 +1,6 @@
+{% extends "layout.twig" %}
+
+{% block content %}
 <main class="flex-grow-1">
     <div class="container-lg mt-3">
         <div class="row">
@@ -7,14 +10,14 @@
                 <form action="/urls" method="post" class="row" required>
                     <div class="col-8">
                         <label for="text" class="visually-hidden">URL для проверки</label>
-                        <?php if (!empty($errors)): ?>
-                        <input type="text" name="url[name]" value="<?= htmlspecialchars($url['name']) ?>"
+                        {% if errors is defined and errors|length %}
+                        <input type="text" name="url[name]" value="{{ url.name|e }}"
                             class="form-control form-control-lg is-invalid" placeholder="https://www.example.com">
-                        <div class="invalid-feedback"><?= $errors[0] ?></div>
-                        <?php else: ?>
+                        <div class="invalid-feedback">{{ errors[0]|e }}</div>
+                        {% else %}
                         <input type="text" name="url[name]" value="" class="form-control form-control-lg"
                             placeholder="https://www.example.com">
-                        <?php endif; ?>
+                        {% endif %}
                     </div>
                     <div class="col-2">
                         <input type="submit" class="btn btn-primary btn-lg ms-3 px-5 text-uppercase mx-3"
@@ -25,3 +28,4 @@
         </div>
     </div>
 </main>
+{% endblock %}

@@ -1,26 +1,29 @@
+{% extends "layout.twig" %}
+
+{% block content %}
 <main class="flex-grow-1">
         <div class="container-lg mt-3">
-            <h1>Сайт: <?= htmlspecialchars($url->getName()) ?></h1>
+            <h1>Сайт: {{ url.getName()|e }} ?></h1>
             <div class="table-responsive">
                 <table class="table table-bordered table-hover text-nowrap" data-test="url">
                     <tbody>
                         <tr>
                             <td>ID</td>
-                            <td><?= $url->getId() ?></td>
+                            <td>{{ url.getId() }}</td>
                         </tr>
                         <tr>
                             <td>Имя</td>
-                            <td><?= htmlspecialchars($url->getName()) ?></td>
+                            <td>{{ url.getName()|e }}</td>
                         </tr>
                         <tr>
                             <td>Дата создания</td>
-                            <td><?= $url->getCreatedAt()->toDateTimeString() ?></td>
+                            <td>{{ url.getCreatedAt().toDateTimeString() }}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <h2 class="mt-5 mb-3">Проверки</h2>
-            <form method="post" action="/urls/<?= $url->getId() ?>/checks" class="mb-3">
+            <form method="post" action="/urls/{{ url.getId() }}/checks" class="mb-3">
                 <input type="submit" class="btn btn-primary" value="Запустить проверку">
             </form>
             <table class="table table-bordered table-hover" data-test="checks">
@@ -35,17 +38,18 @@
                     </tr>
                 </thead>
                 <tbody> 
-                    <?php foreach ($checks as $check): ?>
+                    {% for check in checks %}
                     <tr>
-                        <td><?= $check->getId() ?></td>
-                        <td><?= $check->getStatusCode() ?></td>
-                        <td class="text-break"><?= $check->getH1() ?></td>
-                        <td class="text-break"><?= $check->getTitle() ?></td>
-                        <td class="text-break"><?= $check->getDescription() ?></td>
-                        <td><?= $check->getCreatedAt() ?></td>
+                        <td>{{ check.getId() }}</td>
+                        <td>{{ check.getStatusCode() }}</td>
+                        <td class="text-break">{{ check.getH1()|e }}</td>
+                        <td class="text-break">{{ check.getTitle()|e }}</td>
+                        <td class="text-break">{{ check.getDescription()|e }}</td>
+                        <td>{{ check.getCreatedAt() }}</td>
                     </tr>
-                    <?php endforeach ?>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
     </main>
+{% endblock %}

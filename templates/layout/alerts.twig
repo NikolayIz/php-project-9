@@ -1,0 +1,10 @@
+{% if flash.success is defined and flash.success|length %}
+    <div class="alert alert-success">
+        {{ flash.success[0]|e }}
+    </div>
+{% endif %}
+{% if flash.errors is defined and flash.errors|length %}
+    <div class="alert alert-danger">
+        {{ flash.errors[0]|e }}
+    </div>
+{% endif %}
