@@ -152,11 +152,14 @@ $app->get('/urls/{id}', function (Request $request, Response $response, $args) {
         $response->getBody()->write('Not found');
         return $response->withStatus(404);
     }
+    $urlData['id'] = $url->getId();
+    $urlData['name'] = $url->getName();
+    $urlData['created_at'] = $url->getCreatedAt()->toDateTimeString();
 
     $checksRepository = $this->get(ChecksRepository::class);
     // все проверки в формате Check массивом возвращаем
     $allChecksUrlId = $checksRepository->findAllByUrlId($id);
-    $table = array_map(fn($check) => [
+    $tableChecks = array_map(fn($check) => [
         'id' => $check->getId(),
         'status_code' => $check->getStatusCode(),
         'h1' => $check->getH1(),
@@ -165,8 +168,8 @@ $app->get('/urls/{id}', function (Request $request, Response $response, $args) {
         'created_at' => $check->getCreatedAt(),
     ], $allChecksUrlId);
     $params = [
-        'url' => $url,
-        'table' => $table,
+        'url' => $urlData,
+        'tableChecks' => $tableChecks,
         'flash' => $this->get('flash')->getMessages()
     ];
     return $this->get(Twig::class)->render($response, 'urls/show.twig', $params);

@@ -3,27 +3,27 @@
 {% block content %}
 <main class="flex-grow-1">
         <div class="container-lg mt-3">
-            <h1>Сайт: {{ url.getName()|e }}</h1>
+            <h1>Сайт: {{ url.name|e }}</h1>
             <div class="table-responsive">
                 <table class="table table-bordered table-hover text-nowrap" data-test="url">
                     <tbody>
                         <tr>
                             <td>ID</td>
-                            <td>{{ url.getId() }}</td>
+                            <td>{{ url.id }}</td>
                         </tr>
                         <tr>
                             <td>Имя</td>
-                            <td>{{ url.getName()|e }}</td>
+                            <td>{{ url.name|e }}</td>
                         </tr>
                         <tr>
                             <td>Дата создания</td>
-                            <td>{{ url.getCreatedAt().toDateTimeString() }}</td>
+                            <td>{{ url.created_at }}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <h2 class="mt-5 mb-3">Проверки</h2>
-            <form method="post" action="/urls/{{ url.getId() }}/checks" class="mb-3">
+            <form method="post" action="/urls/{{ url.id }}/checks" class="mb-3">
                 <input type="submit" class="btn btn-primary" value="Запустить проверку">
             </form>
             <table class="table table-bordered table-hover" data-test="checks">
@@ -38,7 +38,7 @@
                     </tr>
                 </thead>
                 <tbody> 
-                    {% for row in table %}
+                    {% for row in tableChecks %}
                     <tr>
                         <td>{{ row.id }}</td>
                         <td>{{ row.status_code }}</td>
