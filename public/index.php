@@ -9,9 +9,7 @@ use App\Url;
 use App\UrlsRepository;
 use App\Check;
 use App\ChecksRepository;
-use GuzzleHttp\Client;
 use DiDom\Document;
-use DiDom\Query;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -79,11 +77,22 @@ $app->get('/urls', function (Request $request, Response $response) {
     $urlsRepository = $this->get(UrlsRepository::class);
     $urls = $urlsRepository->all();//возвращает массив всех url
     $messages = $this->get('flash')->getMessages();
-
+    $table = [];
+    foreach ($urls as $url) {
+        $row['id'] = $url->getId();
+        $row['name'] = $url->getName();
+        $row['last_check'] = $this
+            ->get(ChecksRepository::class)
+            ->findLastCreatedAtByUrlId($url->getId());
+        $row['last_status_code'] = $this
+            ->get(ChecksRepository::class)
+            ->findLastStatusCodeByUrlId($url->getId());
+        $table[] = $row;
+    }
     $params = [
         'flash' => $messages,
         'urls' => $urls,
-        'checksRepo' => $this->get(ChecksRepository::class)
+        'table' => $table
     ];
 
     return $this->get('renderer')->render($response, 'urls/index.phtml', $params);
@@ -94,7 +103,6 @@ $app->post('/urls', function (Request $request, Response $response) use ($router
     $data = is_array($data) ? $data : [];
     $urlData = $data['url'] ?? ['name' => null]; // [name => 'https://example.com']
 
-    $errors = [];
     $errors = UrlValidator::validate($urlData); // array c ошибками
 
     if (!empty($errors)) {
@@ -168,7 +176,11 @@ $app->post('/urls/{url_id}/checks', function (Request $request, Response $respon
     $client = new \GuzzleHttp\Client();
     $nameUrl = $urlIdFromBd->getName();
     try {
-        $statusCode = $client->request('GET', $nameUrl)->getStatusCode();
+        $res = $client->request('GET', $nameUrl);
+        $statusCode = $res->getStatusCode();
+        $html = (string) $res->getBody();
+
+        $document = new Document($html);
     } catch (\GuzzleHttp\Exception\ClientException $e) {
         $this->get('flash')->addMessage('errors', 'Сетевая ошибка, проверка не выполнена');
         return $response
@@ -176,8 +188,6 @@ $app->post('/urls/{url_id}/checks', function (Request $request, Response $respon
             ->withStatus(302);
     }
     // получаем h1, title, description
-    $document = new Document($nameUrl, true);
-
     $h1 = optional($document->first('h1'))->text();
     $title = optional($document->first('title'))->text();
     $desc = $document->first('meta[name=description]')?->getAttribute('content') ?? null;

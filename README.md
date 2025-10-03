@@ -13,9 +13,9 @@ Stores sites and their checks in a database.
 
 ### Getting Started
 ```bash
-git clone https://github.com/NikolayIz/php-project-9.git`
+git clone https://github.com/NikolayIz/php-project-9.git
 cd php-project-9
-make setup`
+make setup
 ```
 Create a local database - [instructions](https://github.com/Hexlet/ru-instructions/blob/main/postgresql.md)
 
@@ -27,8 +27,9 @@ export DATABASE_URL=postgresql://janedoe:mypassword@localhost:5432/mydb
 Format: {provider}://{user}:{password}@{host}:{port}/{db}
 
 Start the local server:
-`make start`
-
+```bash
+make start
+```
 ### Running Tests
 Run all tests:
 ```bash

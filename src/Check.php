@@ -6,12 +6,12 @@ use Carbon\Carbon;
 
 class Check
 {
-    private ?int $id = null;
+    private ?int $id;
     private int $urlId;
-    private ?int $statusCode = null;
-    private ?string $h1 = null;
-    private ?string $title = null;
-    private ?string $description = null;
+    private ?int $statusCode;
+    private ?string $h1;
+    private ?string $title;
+    private ?string $description;
     private Carbon $createdAt;
 
     public function __construct(

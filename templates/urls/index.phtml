@@ -12,12 +12,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($urls as $url):?>
+                        <?php foreach ($table as $row):?>
                         <tr>
-                            <td><?= $url->getId()?></td>
-                            <td><a href="/urls/<?= $url->getId()?>"><?= $url->getName()?></a></td>
-                            <td><?= $checksRepo->findLastCreatedAtByUrlId($url->getId()) ?></td>
-                            <td><?= $checksRepo->findLastStatusCodeByUrlId($url->getId()) ?></td>
+                            <td><?= $row['id'] ?></td>
+                            <td><a href="/urls/<?= $row['id'] ?>"><?= $row['name']?></a></td>
+                            <td><?= $row['last_check'] ?></td>
+                            <td><?= $row['last_status_code'] ?></td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
