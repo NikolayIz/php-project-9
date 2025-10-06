@@ -6,7 +6,7 @@ use Carbon\Carbon;
 
 class Url
 {
-    private ?int $id = null;
+    private ?int $id;
     private string $name;
     private Carbon $createdAt;
 

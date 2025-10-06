@@ -9,9 +9,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </head>
 <body class="min-vh-100 d-flex flex-column">
-    {% include 'layout/header.twig' %}
-    {% include 'layout/alerts.twig' %}
+    {% include 'components/header.twig' %}
+    {% include 'components/alerts.twig' %}
         {% block content %}{% endblock %}
-    {% include 'layout/footer.twig' %}
+    {% include 'components/footer.twig' %}
 </body>
 </html>

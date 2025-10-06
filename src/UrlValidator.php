@@ -16,24 +16,19 @@ class UrlValidator
     {
         // Указываем, что будем валидировать поле "name"
         $v = new Validator($data);
-
         // Правила валидации
         $v->rule('required', 'name')->message('URL не должен быть пустым');
         $v->rule('url', 'name')->message('Некорректный URL');
         $v->rule('lengthMax', 'name', 255)->message('URL не должен превышать 255 символов');
-
         // Проверяем
         if ($v->validate()) {
             return []; // ✅ Нет ошибок
         }
-
         // Приведём ошибки к простому формату
         // Valitron возвращает массив с ключами полей, например ['name' => ['Ошибка1', 'Ошибка2']]
+        // Нам нужно просто ['Ошибка1', 'Ошибка2']
         // $v->errors() может вернуть false поэтому явно кастуем к массиву
-        $errors = [];
-        foreach ((array) $v->errors() as $fieldErrors) {
-            $errors = array_merge($errors, (array) $fieldErrors);
-        }
+        $errors = array_merge([], ...array_values((array)$v->errors()));
         return $errors;
     }
 }

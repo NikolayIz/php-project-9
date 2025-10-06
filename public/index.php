@@ -80,9 +80,10 @@ $app->get('/', function (Request $request, Response $response) {
 
 // обработчик на urls
 $app->get('/urls', function (Request $request, Response $response) {
-
+    //возвращаем массив всех url
     $urlsRepository = $this->get(UrlsRepository::class);
-    $urls = $urlsRepository->all();//возвращает массив всех url
+    $urls = $urlsRepository->all();
+
     $messages = $this->get('flash')->getMessages();
     $table = array_map(fn($url) => [
         'id' => $url->getId(),
@@ -94,6 +95,7 @@ $app->get('/urls', function (Request $request, Response $response) {
             ->get(ChecksRepository::class)
             ->findLastStatusCodeByUrlId($url->getId()),
     ], $urls);
+
     $params = [
         'flash' => $messages,
         'urls' => $urls,
@@ -141,7 +143,6 @@ $app->post('/urls', function (Request $request, Response $response) use ($router
 });
 
 $app->get('/urls/{id}', function (Request $request, Response $response, $args) {
-
     // получаем id из адреса
     $id = (int) $args['id'];
     $urlsRepository = $this->get(UrlsRepository::class);
@@ -152,6 +153,7 @@ $app->get('/urls/{id}', function (Request $request, Response $response, $args) {
         $response->getBody()->write('Not found');
         return $response->withStatus(404);
     }
+
     $urlData['id'] = $url->getId();
     $urlData['name'] = $url->getName();
     $urlData['created_at'] = $url->getCreatedAt()->toDateTimeString();
@@ -167,6 +169,7 @@ $app->get('/urls/{id}', function (Request $request, Response $response, $args) {
         'description' => $check->getDescription(),
         'created_at' => $check->getCreatedAt(),
     ], $allChecksUrlId);
+
     $params = [
         'url' => $urlData,
         'tableChecks' => $tableChecks,
@@ -176,7 +179,6 @@ $app->get('/urls/{id}', function (Request $request, Response $response, $args) {
 })->setName('urls.show');
 
 $app->post('/urls/{url_id}/checks', function (Request $request, Response $response, $args) use ($router) {
-
     $urlId = (int) $args['url_id'];
     // проверяем есть ли такой сайт по айди
     $urlsRepository = $this->get(UrlsRepository::class);
