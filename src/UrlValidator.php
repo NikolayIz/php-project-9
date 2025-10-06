@@ -28,7 +28,6 @@ class UrlValidator
         // Valitron возвращает массив с ключами полей, например ['name' => ['Ошибка1', 'Ошибка2']]
         // Нам нужно просто ['Ошибка1', 'Ошибка2']
         // $v->errors() может вернуть false поэтому явно кастуем к массиву
-        $errors = array_merge([], ...array_values((array)$v->errors()));
-        return $errors;
+        return array_merge([], ...array_values((array)$v->errors()));
     }
 }
