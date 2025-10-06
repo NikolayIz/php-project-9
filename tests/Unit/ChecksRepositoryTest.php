@@ -5,37 +5,27 @@ namespace Tests;
 use PHPUnit\Framework\TestCase;
 use App\Check;
 use App\ChecksRepository;
-use PDO;
 use Carbon\Carbon;
+use Tests\Traits\SqliteTestSetup;
 
 class ChecksRepositoryTest extends TestCase
 {
-    private ?PDO $pdo;
+    use SqliteTestSetup;
+
     private ?ChecksRepository $repository;
 
     protected function setUp(): void
     {
-        // Подключение к in-memory SQLite
-        $this->pdo = new PDO('sqlite::memory:');
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        // Создаем таблицы для ссылок и проверок
-        $sql = file_get_contents(__DIR__ . '/../../database.sql');
-        $sql = str_replace(
-            ['SERIAL', 'bigint', 'REFERENCES urls(id) ON DELETE CASCADE'],
-            ['INTEGER', 'INTEGER', ''],
-            $sql
-        );
-        $this->pdo->exec($sql);
-
+        // метод из трейта SqliteTestSetup
+        $this->setUpDatabase(__DIR__ . '/../../database.sql');
         $this->repository = new ChecksRepository($this->pdo);
     }
 
     protected function tearDown(): void
     {
-        // Явно закрываем соединение и освобождаем репозиторий
-        $this->pdo = null;
         $this->repository = null;
+        // метод из трейта SqliteTestSetup
+        $this->tearDownDatabase();
     }
 
     // Вспомогательный метод для создания проверки

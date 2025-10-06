@@ -5,43 +5,26 @@ namespace Tests;
 use PHPUnit\Framework\TestCase;
 use App\Url;
 use App\UrlsRepository;
-use PDO;
+use Tests\Traits\SqliteTestSetup;
 
 class UrlsRepositoryTest extends TestCase
 {
-    private ?PDO $pdo;
+    use SqliteTestSetup;
+
     private ?UrlsRepository $repository;
 
     protected function setUp(): void
     {
-        // Подключение к in-memory SQLite
-        $this->pdo = new PDO('sqlite::memory:');
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        // Создаем таблицу urls
-        $sql = file_get_contents(__DIR__ . '/../../database.sql');
-        $sql = str_replace(
-            ['SERIAL', 'bigint', 'REFERENCES urls(id) ON DELETE CASCADE'],
-            ['INTEGER', 'INTEGER', ''],
-            $sql
-        );
-        $this->pdo->exec($sql);
-        // $this->pdo->exec('
-        //     CREATE TABLE urls (
-        //         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        //         name TEXT,
-        //         created_at TEXT
-        //     )
-        // ');
-
+        // метод из трейта SqliteTestSetup
+        $this->setUpDatabase(__DIR__ . '/../../database.sql');
         $this->repository = new UrlsRepository($this->pdo);
     }
 
     protected function tearDown(): void
     {
-        // Явно закрываем соединение и освобождаем репозиторий
-        $this->pdo = null;
         $this->repository = null;
+        // метод из трейта SqliteTestSetup
+        $this->tearDownDatabase();
     }
 
     // Вспомогательный метод для создания и сохранения URL
