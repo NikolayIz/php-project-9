@@ -9,8 +9,8 @@ use PDO;
 
 class UrlsRepositoryTest extends TestCase
 {
-    private PDO $pdo;
-    private UrlsRepository $repository;
+    private ?PDO $pdo;
+    private ?UrlsRepository $repository;
 
     protected function setUp(): void
     {
@@ -19,15 +19,29 @@ class UrlsRepositoryTest extends TestCase
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         // Создаем таблицу urls
-        $this->pdo->exec('
-            CREATE TABLE urls (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT,
-                created_at TEXT
-            )
-        ');
+        $sql = file_get_contents(__DIR__ . '/../../database.sql');
+        $sql = str_replace(
+            ['SERIAL', 'bigint', 'REFERENCES urls(id) ON DELETE CASCADE'],
+            ['INTEGER', 'INTEGER', ''],
+            $sql
+        );
+        $this->pdo->exec($sql);
+        // $this->pdo->exec('
+        //     CREATE TABLE urls (
+        //         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        //         name TEXT,
+        //         created_at TEXT
+        //     )
+        // ');
 
         $this->repository = new UrlsRepository($this->pdo);
+    }
+
+    protected function tearDown(): void
+    {
+        // Явно закрываем соединение и освобождаем репозиторий
+        $this->pdo = null;
+        $this->repository = null;
     }
 
     // Вспомогательный метод для создания и сохранения URL

@@ -10,36 +10,32 @@ use Carbon\Carbon;
 
 class ChecksRepositoryTest extends TestCase
 {
-    private PDO $pdo;
-    private ChecksRepository $repository;
+    private ?PDO $pdo;
+    private ?ChecksRepository $repository;
 
     protected function setUp(): void
     {
+        // Подключение к in-memory SQLite
         $this->pdo = new PDO('sqlite::memory:');
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         // Создаем таблицы для ссылок и проверок
-        $this->pdo->exec('
-            CREATE TABLE urls (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT,
-                created_at TEXT
-            );
-        ');
-
-        $this->pdo->exec('
-            CREATE TABLE url_checks (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                url_id INTEGER,
-                status_code INTEGER,
-                h1 TEXT,
-                title TEXT,
-                description TEXT,
-                created_at TEXT
-            );
-        ');
+        $sql = file_get_contents(__DIR__ . '/../../database.sql');
+        $sql = str_replace(
+            ['SERIAL', 'bigint', 'REFERENCES urls(id) ON DELETE CASCADE'],
+            ['INTEGER', 'INTEGER', ''],
+            $sql
+        );
+        $this->pdo->exec($sql);
 
         $this->repository = new ChecksRepository($this->pdo);
+    }
+
+    protected function tearDown(): void
+    {
+        // Явно закрываем соединение и освобождаем репозиторий
+        $this->pdo = null;
+        $this->repository = null;
     }
 
     // Вспомогательный метод для создания проверки
